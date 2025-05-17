@@ -1,0 +1,174 @@
+<div class="dashboard-container">
+  <!-- En-tête du Dashboard -->
+  <header class="dashboard-header">
+    <h1>Dashboard de Monitoring des Machines</h1>
+    <div class="actions">
+      <div class="date-filter">
+        <label>Période:</label>
+        <select [(ngModel)]="selectedDateRange" (change)="onDateRangeChange(selectedDateRange)">
+          <option value="24h">Dernières 24 heures</option>
+          <option value="7d">Derniers 7 jours</option>
+          <option value="30d">Dernier mois</option>
+          <option value="90d">Derniers 3 mois</option>
+          <option value="1y">Dernière année</option>
+        </select>
+      </div>
+      <button class="refresh-btn" (click)="refreshData()">
+        <span class="material-icons">refresh</span> Actualiser
+      </button>
+      <button class="export-btn" (click)="exportAllCharts()">
+        <span class="material-icons">download</span> Exporter
+      </button>
+    </div>
+  </header>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-container">
+    <p>{{ error }}</p>
+    <button (click)="loadData()">Réessayer</button>
+  </div>
+
+  <!-- Contenu principal du dashboard -->
+  <main *ngIf="!isLoading && !error" class="dashboard-content">
+    <!-- Section Sélection des métriques en premier -->
+    <section class="metrics-selection">
+      <h3>Métriques à afficher</h3>
+      <div class="metrics-list">
+        <div *ngFor="let metric of availableMetrics" class="metric-item">
+          <label>
+            <input type="checkbox" 
+                  [checked]="selectedMetrics.includes(metric)" 
+                  (change)="onMetricToggle(metric)">
+            <span class="color-indicator" [style.backgroundColor]="chartColors[metric]"></span>
+            {{ metric }}
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Graphiques principaux -->
+    <div class="main-charts">
+      <!-- Graphique de séries temporelles -->
+      <section class="chart-container timeseries expanded">
+        <div class="chart-header">
+          <h2>Évolution temporelle</h2>
+          <div class="chart-controls">
+            <button class="toggle-fullscreen" (click)="toggleFullscreen('timeseries')">
+              <span class="material-icons">fullscreen</span>
+            </button>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #timeseriesCanvas></canvas>
+        </div>
+      </section>
+
+      <!-- Graphique: Médianes mensuelles -->
+      <section class="chart-container monthly-median">
+        <div class="chart-header">
+          <h2>Médianes mensuelles</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #monthlyMedianCanvas></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Résumé des données -->
+    <section class="data-summary" *ngIf="machineData.length > 0">
+      <h3>Résumé des dernières données</h3>
+      <div class="summary-content">
+        <p>Dernière mise à jour: {{ machineData[machineData.length-1].Timestamp | date:'medium' }}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Métrique</th>
+              <th>Valeur</th>
+              <th>Minimum</th>
+              <th>Maximum</th>
+              <th>Moyenne</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let metric of selectedMetrics">
+              <td>{{ metric }}</td>
+              <td>{{ machineData[machineData.length-1][metric] }}</td>
+              <td>{{ calculateMin(metric) | number:'1.2-2' }}</td>
+              <td>{{ calculateMax(metric) | number:'1.2-2' }}</td>
+              <td>{{ calculateAvg(metric) | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section de graphiques secondaires en premier -->
+    <div class="secondary-charts">
+      <!-- Graphique de comparaison -->
+      <section class="chart-container comparison">
+        <div class="chart-header">
+          <h2>Comparaison des métriques</h2>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #comparisonCanvas></canvas>
+        </div>
+      </section>
+
+      <!-- Graphique: Distribution -->
+      <section class="chart-container distribution">
+        <div class="chart-header">
+          <h2>Distribution des valeurs</h2>
+          <div class="metric-selector">
+            <select [(ngModel)]="selectedMetricForDistribution" (change)="onMetricSelect('distribution', selectedMetricForDistribution)">
+              <option *ngFor="let metric of availableMetrics" [value]="metric">{{ metric }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #distributionCanvas></canvas>
+        </div>
+      </section>
+
+      <!-- Graphique: Heatmap -->
+      <section class="chart-container heatmap">
+        <div class="chart-header">
+          <h2>Carte de chaleur par jour/heure</h2>
+          <div class="metric-selector">
+            <select [(ngModel)]="selectedMetricForHeatmap" (change)="onMetricSelect('heatmap', selectedMetricForHeatmap)">
+              <option *ngFor="let metric of availableMetrics" [value]="metric">{{ metric }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #heatmapCanvas></canvas>
+        </div>
+      </section>
+
+      <!-- Graphique: Comparaison par jour de semaine -->
+      <section class="chart-container weekday-comparison">
+        <div class="chart-header">
+          <h2>Comparaison par jour de la semaine</h2>
+          <div class="metric-selector">
+            <select [(ngModel)]="selectedMetricForWeekday" (change)="onMetricSelect('weekday', selectedMetricForWeekday)">
+              <option *ngFor="let metric of availableMetrics" [value]="metric">{{ metric }}</option>
+            </select>
+           <select [(ngModel)]="selectedWeekday" (ngModelChange)="onWeekdayChange($event)">
+                <option *ngFor="let day of weekdayNames; let i = index" [value]="i">{{ day }}</option>
+          </select>
+          </div>
+        </div>
+        <div class="chart-wrapper weekday-comparison">
+          <canvas #weekdayComparisonCanvas></canvas>
+        </div>
+      </section>
+    </div>
+
+    
+  </main>
+</div>

@@ -1,0 +1,102 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  background-color: #ffffff;
+  box-shadow: 0 3px 6px rgba(20, 68, 108, 0.15);
+  padding: 0 28px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-bottom: 2px solid rgba(226, 121, 39, 0.2);
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+
+    .logo {
+      font-size: 22px;
+      font-weight: 600;
+      color: #14446c;
+      
+      img {
+        max-height: 42px;
+        transition: transform 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .user-name {
+        font-size: 15px;
+        font-weight: 500;
+        color: #14446c;
+        transition: color 0.2s;
+        
+        &:hover {
+          color: #e27927;
+        }
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: #e27927;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 16px;
+        box-shadow: 0 2px 4px rgba(226, 121, 39, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        transition: transform 0.2s, box-shadow 0.2s;
+        
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0 3px 6px rgba(226, 121, 39, 0.4);
+        }
+      }
+    }
+
+    .logout-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(20, 68, 108, 0.07);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #14446c;
+      font-weight: 500;
+      padding: 8px 16px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgba(226, 121, 39, 0.15);
+        color: #e27927;
+      }
+
+      .material-icons {
+        font-size: 18px;
+      }
+    }
+  }
+}

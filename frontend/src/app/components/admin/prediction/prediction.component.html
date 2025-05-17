@@ -1,0 +1,123 @@
+<div class="prediction-container">
+  <h2 class="prediction-title">Energy Consumption Prediction</h2>
+  
+  <!-- Status indicator -->
+  <div class="status-container">
+    <div *ngIf="modelsStatus === PredictionStatus.LOADING || predictionStatus === PredictionStatus.LOADING" 
+         class="loading-indicator">
+      <div class="spinner"></div>
+      <span>{{ modelsStatus === PredictionStatus.LOADING ? 'Loading models...' : 'Processing prediction...' }}</span>
+    </div>
+    
+    <div *ngIf="errorMessage" class="error-message">
+      <span class="material-icons error-icon">error_outline</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
+  
+  <!-- No models available message -->
+  <div *ngIf="modelsStatus === PredictionStatus.SUCCESS && availableModels.length === 0" class="empty-state">
+    <span class="material-icons">sentiment_dissatisfied</span>
+    <h3>No prediction models available</h3>
+    <p>Please ensure your models are properly configured in the server.</p>
+  </div>
+  
+  <!-- Main content when models are available -->
+  <div *ngIf="availableModels.length > 0" class="prediction-content">
+    <!-- Input form -->
+    <form [formGroup]="predictionForm" (ngSubmit)="predictConsumption()" class="prediction-form">
+      <div class="form-header">
+        <h3>Current Consumption Values</h3>
+        <p>Enter the current consumption values to predict next day usage</p>
+      </div>
+      
+      <div class="form-fields">
+        <div class="input-field" *ngFor="let machine of availableModels">
+          <label [for]="'machine-' + machine">{{ machine }}</label>
+          <div class="input-with-unit" [class.has-error]="hasError(machine)">
+            <input 
+              type="number" 
+              [id]="'machine-' + machine" 
+              [formControlName]="machine" 
+              placeholder="0" 
+              min="0"
+              step="0.01">
+            <span class="unit">kWh</span>
+          </div>
+          <div *ngIf="hasError(machine)" class="field-error">
+            Please enter a valid value
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-primary"
+          [disabled]="predictionStatus === PredictionStatus.LOADING">
+          <span class="material-icons">trending_up</span>
+          Predict Next Day
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-secondary"
+          [disabled]="predictionStatus === PredictionStatus.LOADING"
+          (click)="resetForm()">
+          <span class="material-icons">refresh</span>
+          Reset
+        </button>
+      </div>
+    </form>
+    
+    <!-- Results section -->
+    <div *ngIf="Object.keys(predictionResults).length > 0" class="prediction-results">
+      <h3>
+        <span class="material-icons">analytics</span>
+        Prediction Results
+      </h3>
+      
+      <div class="results-card">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Machine</th>
+              <th>Current (kWh)</th>
+              <th>Prediction (kWh)</th>
+              <th>Change</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let machine of Object.keys(predictionResults)" [ngClass]="getPredictionClass(machine)">
+              <td class="machine-name">{{ machine }}</td>
+              <td class="current-value">{{ predictionResults[machine].current_value | number:'1.2-2' }}</td>
+              
+              <!-- Prediction value column -->
+              <td class="predicted-value" *ngIf="isPredictionSuccessful(machine)">
+                {{ predictionResults[machine].predicted_value | number:'1.2-2' }}
+              </td>
+              <td class="error-cell" *ngIf="!isPredictionSuccessful(machine)">
+                <span class="material-icons">warning</span>
+                {{ predictionResults[machine].message }}
+              </td>
+              
+              <!-- Change percentage column -->
+              <td class="change-column" *ngIf="isPredictionSuccessful(machine)">
+                <div *ngIf="predictionResults[machine].percentChange !== undefined" 
+                     class="change-indicator" 
+                     [ngClass]="getTrendClass(predictionResults[machine].percentChange)">
+                  <span class="change-value">{{ predictionResults[machine].percentChange | number:'1.1-1' }}%</span>
+                  <span class="material-icons trend-icon">
+                    {{ predictionResults[machine].percentChange! > 0 ? 'arrow_upward' : 
+                       predictionResults[machine].percentChange! < 0 ? 'arrow_downward' : 'remove' }}
+                  </span>
+                </div>
+              </td>
+              <td *ngIf="!isPredictionSuccessful(machine)">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

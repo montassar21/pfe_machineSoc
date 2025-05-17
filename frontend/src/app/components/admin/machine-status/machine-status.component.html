@@ -1,0 +1,90 @@
+<div class="machine-status-container">
+  <div class="header">
+    <h2>Machine Status Monitor</h2>
+    <div class="controls">
+      <button class="refresh-btn" (click)="refresh()">
+        <i class="fas fa-sync"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Monitoring Controls Section -->
+  <div class="monitoring-controls">
+    <div class="monitoring-status">
+      <h3>Monitoring System</h3>
+      <div *ngIf="monitoringLoading" class="monitoring-loading">
+        <div class="spinner-sm"></div>
+        <span>Loading...</span>
+      </div>
+      <div *ngIf="!monitoringLoading && monitoringStatus" class="status-indicator">
+        <span class="status-dot" [ngClass]="monitoringStatus.status === 'active' ? 'status-running' : 'status-stopped'"></span>
+        <span class="status-text">{{monitoringStatus.status === 'active' ? 'Active' : 'Inactive'}}</span>
+        <span class="status-message" *ngIf="monitoringStatus.message">({{monitoringStatus.message}})</span>
+      </div>
+    </div>
+    
+    <div class="monitoring-actions">
+      <div class="frequency-control" *ngIf="monitoringStatus?.status !== 'active'">
+        <label for="frequency">Frequency (minutes):</label>
+        <input type="number" id="frequency" min="1" max="1440" [(ngModel)]="monitoringFrequency">
+      </div>
+      
+      <button *ngIf="monitoringStatus?.status !== 'active'" 
+              class="start-btn" 
+              [disabled]="monitoringLoading" 
+              (click)="startMonitoring()">
+        <i class="fas fa-play"></i> Start Monitoring
+      </button>
+      
+      <button *ngIf="monitoringStatus?.status === 'active'" 
+              class="stop-btn" 
+              [disabled]="monitoringLoading" 
+              (click)="stopMonitoring()">
+        <i class="fas fa-stop"></i> Stop Monitoring
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading machine data...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="refresh()">Try Again</button>
+  </div>
+
+  <div *ngIf="!loading && !error && machineStatuses.length === 0" class="no-data">
+    <p>No machine status data available.</p>
+  </div>
+
+  <div *ngIf="!loading && !error && machineStatuses.length > 0" class="machine-grid">
+    <div *ngFor="let machine of machineStatuses" class="machine-card" [ngClass]="getStatusClass(machine.status)">
+      <div class="machine-header">
+        <h3>{{ machine.machine_name }}</h3>
+        <div class="status-indicator">
+          <span class="status-dot" [ngClass]="getStatusClass(machine.status)"></span>
+          <span class="status-text">{{ machine.status_display }}</span>
+        </div>
+      </div>
+
+      <div class="machine-details">
+        <p><strong>Last Updated:</strong> {{ machine.last_updated | date:'medium' }}</p>
+        
+        <div class="stop-history" *ngIf="getStopHistoryForMachine(machine.machine_name).length > 0">
+          <h4>Recent Stop History</h4>
+          <div class="stop-info" *ngFor="let stop of getStopHistoryForMachine(machine.machine_name).slice(0, 3)">
+            <p><strong>From:</strong> {{ stop.start_time | date:'medium' }}</p>
+            <p><strong>To:</strong> {{ stop.end_time ? (stop.end_time | date:'medium') : 'Ongoing' }}</p>
+            <p><strong>Duration:</strong> {{ formatDuration(stop) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="timestamp-info" *ngIf="!loading && !error && machineStatuses.length > 0">
+    <p>Last data update: {{ machineStatuses[0].last_updated | date:'medium' }}</p>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="sidebar" [class.collapsed]="collapsed">
+ 
+
+  
+  <ul class="menu-list">
+    <li *ngFor="let item of menuItems" 
+        class="menu-item" 
+        [class.active]="item.active"
+        (click)="navigateTo(item.route)">
+      <span class="material-icons">{{ item.icon }}</span>
+      <span class="menu-label" *ngIf="!collapsed">{{ item.label }}</span>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,93 @@
+// sidebar.component.scss
+.sidebar {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  height: calc(100vh - 64px);
+  width: 240px;
+  background-color: #fff;
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 900;
+  
+  &.collapsed {
+    width: 60px;
+  }
+  
+  .toggle-button {
+    position: absolute;
+    top: 20px;
+    right: -12px;
+    width: 24px;
+    height: 24px;
+    background-color: #e27927; // Primary orange color
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    transition: background-color 0.3s;
+    
+    &:hover {
+      background-color: darken(#e27927, 10%);
+    }
+
+    .material-icons {
+      font-size: 16px;
+      color: white;
+    }
+  }
+
+  .sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    
+    .app-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #14446c; // Secondary blue color
+    }
+  }
+  
+  .menu-list {
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+  
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #555;
+      margin: 4px 8px;
+      border-radius: 8px;
+  
+      &:hover {
+        background-color: rgba(226, 121, 39, 0.1); // Light orange background on hover
+        color: #e27927; // Orange text on hover
+      }
+  
+      &.active {
+        background-color: rgba(20, 68, 108, 0.1); // Light blue background for active
+        color: #14446c; // Blue text color for active
+        font-weight: 500;
+        border-left: 3px solid #14446c; // Blue border for active
+      }
+  
+      .material-icons {
+        margin-right: 16px;
+        font-size: 20px;
+      }
+  
+      .menu-label {
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+    }
+  }
+}
