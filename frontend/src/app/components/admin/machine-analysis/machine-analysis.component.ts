@@ -29,8 +29,8 @@ export class MachineAnalysisComponent implements OnInit, OnDestroy {
   
   selectedMachine: string = '';
   availableMachines: string[] = [
-     'G19', 'G26', 'Compresseur_3', 'G39', 
-    'D18', 'G10', 'TGBT_3'
+     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
+    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
   ];
   selectedDateRange: string = '30d';
   selectedMetrics: string[] = [];
@@ -56,8 +56,8 @@ export class MachineAnalysisComponent implements OnInit, OnDestroy {
   
   // Analysis metrics
   availableMetrics: string[] = [
-     'G19', 'G26', 'Compresseur_3', 'G39', 
-    'D18', 'G10', 'TGBT_3'
+     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
+    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
   ];
   
   // Performance metrics

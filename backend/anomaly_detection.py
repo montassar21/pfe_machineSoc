@@ -26,19 +26,19 @@ DB_CONFIG = {
 }
 
 MACHINES = [
-    'G19', 'G26', 'Compresseur_3', 'G39', 
-    'D18', 'G10', 'TGBT_3'
+    'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
+    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
 ]
 
 # Dictionnaire de correspondance entre colonnes de la base de données et noms des modèles
 MODEL_MAPPING = {
     'G19': 'Misfat3_G19',
     'G26': 'Misfat3_G26',
-    'Compresseur_3': 'Compresseur3',
-    'G39': 'Misfat_3_G39',
-    'D18': 'Misfat_3_D18',
-    'G10': 'Misfat__G10',
-    'TGBT_3': 'TGBT_3'
+    'MISFAT_3_Compresseur_3': 'Compresseur3',
+    'MISFAT_3_G39f': 'Misfat_3_G39',
+    'MISFAT_3_D18f': 'Misfat_3_D18',
+    'MISFAT_3_G10f': 'Misfat__G10',
+    'MISFAT_3_TGBT_N3f': 'TGBT_3'
 }
 
 MODELS_FOLDER = "models"

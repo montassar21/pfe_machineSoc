@@ -14,7 +14,5 @@ EMAIL_CONFIG = {
     'receiver_email': 'amenibouchemi0123@gmail.com'
 }
 
-MACHINE_COLUMNS =  [
-    'G19', 'G26', 'Compresseur_3', 'G39', 
-    'D18', 'G10', 'TGBT_3'
-]
+MACHINE_COLUMNS = ["G19", "G26", "MISFAT_3_Compresseur_3", "MISFAT_3_G39f", 
+                  "MISFAT_3_D18f", "MISFAT_3_G10f", "MISFAT_3_TGBT_N3f"]
