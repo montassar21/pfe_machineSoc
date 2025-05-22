@@ -288,10 +288,10 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error loading prediction models: {e}")
     
-    monitoring_thread = threading.Thread(
-        target=surveiller_machines_automatique, 
-        daemon=True
-    )
-    monitoring_thread.start()
+    # monitoring_thread = threading.Thread(
+    #     target=surveiller_machines_automatique, 
+    #     daemon=True
+    # )
+    # monitoring_thread.start()
     
     app.run(debug=True, host='0.0.0.0', port=5000)

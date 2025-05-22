@@ -20,8 +20,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedDateRange: string = '30d';
   selectedMetrics: string[] = [];
   availableMetrics: string[] = [
-     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
-    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
+     'G19', 'G26', 'Compresseur_3', 'G39', 
+    'D18', 'G10', 'TGBT_3'
   ];
   isFullscreen: boolean = false;
   fullscreenElement: string | null = null;
@@ -61,6 +61,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('heatmapCanvas') heatmapCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('weekdayComparisonCanvas') weekdayComparisonCanvas!: ElementRef<HTMLCanvasElement>;
   
+  
   constructor(private machineService: MachineService) {}
 
   ngOnInit(): void {
@@ -90,6 +91,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     // Assurer que les graphiques sont rendus après que la vue soit initialisée
     setTimeout(() => {
       if (this.machineData.length > 0) {
+        // console.log(this.machineData)
         this.renderCharts();
       }
     }, 300);
@@ -133,6 +135,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(data => {
         this.machineData = this.filterDataByDateRange(data);
+        // console.log(this.machineData)
         // Préparer les données pour le graphique par jour de la semaine
         this.prepareWeekdayData();
       });
@@ -179,6 +182,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.renderDistributionChart();
     this.renderHeatmapChart();
     this.renderWeekdayComparisonChart();
+
   }
 
   renderTimeseriesChart(): void {
@@ -637,21 +641,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     new Date(b.Timestamp).getTime() - new Date(a.Timestamp).getTime()
   );
   
+
   sortedData.forEach(item => {
     const date = new Date(item.Timestamp);
     
     if (date.getDay() === this.selectedWeekday) {
       const weekNumber = this.getWeekNumber(date);
+
       const weekYear = date.getFullYear();
       const weekKey = `${weekYear}-W${weekNumber.toString().padStart(2, '0')}`;
-      
+            console.log("weekkey "+ weekKey)
+
       const value = Number(item[this.selectedMetricForWeekday as keyof MachineData]);
-      
+
+      // console.log("values per hour = " + value)
       if (isNaN(value)) return;
       
-      if (weeklyData[weekKey] === undefined) {
-        weeklyData[weekKey] = value;
-      }
+if (weeklyData[weekKey] === undefined) {
+  weeklyData[weekKey] = value;
+} else {
+  weeklyData[weekKey] += value;
+}
     }
   });
   
@@ -682,7 +692,7 @@ renderWeekdayComparisonChart(): void {
   // Utiliser les données préparées
   const weekLabels = this.weekdayData.map(item => item.weekLabel);
   const values = this.weekdayData.map(item => item.value);
-  
+  console.log("logs :" + values)
   const color = this.chartColors[this.selectedMetricForWeekday] || this.getUniqueColor(this.selectedMetricForWeekday);
   
   const chart = new Chart(ctx, {
@@ -965,4 +975,8 @@ getWeekNumber(date: Date): number {
   onResize(event: Event): void {
     this.renderCharts();
   }
+
+
+
+
 }
