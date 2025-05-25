@@ -28,9 +28,9 @@ export class MachineAnalysisComponent implements OnInit, OnDestroy {
   anomalies: HistoricalAnomalyResult = { summary: { anomalies_found: false, machines_count: 0, machines_processed: 0, timestamp: '' } };
   
   selectedMachine: string = '';
-  availableMachines: string[] = [
-     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
-    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
+  availableMachines: string[] =  [
+     'G19', 'G26', 'Compresseur_3', 'G39', 
+    'D18', 'G10', 'TGBT_3'
   ];
   selectedDateRange: string = '30d';
   selectedMetrics: string[] = [];
@@ -55,9 +55,9 @@ export class MachineAnalysisComponent implements OnInit, OnDestroy {
   endDate: string = '';
   
   // Analysis metrics
-  availableMetrics: string[] = [
-     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
-    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
+  availableMetrics: string[] =  [
+     'G19', 'G26', 'Compresseur_3', 'G39', 
+    'D18', 'G10', 'TGBT_3'
   ];
   
   // Performance metrics

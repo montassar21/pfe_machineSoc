@@ -20,8 +20,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedDateRange: string = '30d';
   selectedMetrics: string[] = [];
   availableMetrics: string[] = [
-     'G19', 'G26', 'MISFAT_3_Compresseur_3', 'MISFAT_3_G39f', 
-    'MISFAT_3_D18f', 'MISFAT_3_G10f', 'MISFAT_3_TGBT_N3f'
+     'G19', 'G26', 'Compresseur_3', 'G39', 
+    'D18', 'G10', 'TGBT_3'
   ];
   isFullscreen: boolean = false;
   fullscreenElement: string | null = null;
