@@ -6,6 +6,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import time
 import threading
+import requests
+
 
 from config import DB_CONFIG, EMAIL_CONFIG, MACHINE_COLUMNS
 
@@ -377,3 +379,20 @@ def surveiller_machines_automatique(frequence_verification_minutes=5):
             time.sleep(frequence_verification_minutes * 60)
     
     print("Surveillance arrêtée.")
+
+
+def call_detect_anomalies_periodically():
+    try:
+        while True:
+            try:
+                print("Appel de /api/detect-anomalies")
+                response = requests.get('http://localhost:5000/api/detect-anomalies?hours=1')
+                if response.status_code == 200:
+                    print("Réponse:", response.json())
+                else:
+                    print(f"Erreur HTTP {response.status_code} lors de l'appel")
+            except Exception as inner_e:
+                print("Erreur interne dans la boucle:", inner_e)
+            time.sleep(3600)
+    except Exception as e:
+        print("Erreur dans le thread:", e)

@@ -6,6 +6,11 @@ import os
 import logging
 import pyodbc
 from datetime import datetime, timedelta
+from config import EMAIL_CONFIG
+
+from functions import (
+    send_alert_email
+    )
 
 logging.basicConfig(
     level=logging.INFO,
@@ -194,6 +199,33 @@ def detect_anomalies(data=None, hours=24):
             else:
                 anomalies_list = []
             
+            if hours == 1:
+                # Supposons anomalies_list vient de anomalies.to_dict('records')
+                if anomalies_list:
+                    # Identifier dynamiquement la colonne de mesure
+                    example = anomalies_list[0]
+                    value_col = next(col for col in example if col not in ["Timestamp", "score"])
+
+                    formatted_anomalies = [
+                        {
+                            "machine": f"Machine {value_col}",
+                            "date": anomaly["Timestamp"],
+                            "consommation": anomaly[value_col]
+                        }
+                        for anomaly in anomalies_list
+                    ]
+                    
+                    formatted_anomalies_df = pd.DataFrame(formatted_anomalies)
+
+                    logging.info(f"anomalies list is : {formatted_anomalies} ")
+                    send_alert_email(formatted_anomalies_df,machine,EMAIL_CONFIG['sender_email'],EMAIL_CONFIG['receiver_email'],EMAIL_CONFIG['sender_password'])
+                
+                else:
+                    formatted_anomalies = []
+
+
+
+
             results[machine] = {
                 "status": "success",
                 "total_points": len(machine_data),
@@ -203,7 +235,7 @@ def detect_anomalies(data=None, hours=24):
             }
             
             logging.info(f"Machine {machine}: {len(anomaly_indices)} anomalies détectées sur {len(machine_data)} points")
-            
+
         except Exception as e:
             logging.error(f"Erreur lors de la détection pour {machine}: {e}")
             results[machine] = {"status": "error", "message": str(e)}
@@ -285,6 +317,7 @@ def get_historical_anomalies(start_date=None, end_date=None, machines=None):
 if __name__ == "__main__":
     results = detect_anomalies(hours=48)
     print(f"Résultats: {len(results)} machines analysées")
+    
     
     for machine, result in results.items():
         if machine != "summary":

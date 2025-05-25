@@ -75,7 +75,7 @@ export class MachineService {
     return this.http.post<ApiResponse<null>>(`${this.apiUrl}/start-monitoring`, data);
   }
 
-  detectAnomalies(hours: number = 24): Observable<AnomalyDetectionResult> {
+  detectAnomalies(hours: number = 1): Observable<AnomalyDetectionResult> {
     return this.http.get<AnomalyDetectionResult>(`${this.apiUrl}/detect-anomalies`, {
       params: { hours: hours.toString() }
     });

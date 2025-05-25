@@ -11,7 +11,8 @@ from functions import (
     check_machines_status, 
     detect_machine_stops, 
     send_alert_email, 
-    surveiller_machines_automatique
+    surveiller_machines_automatique,
+    call_detect_anomalies_periodically
 )
 
 from anomaly_detection import detect_anomalies, get_historical_anomalies
@@ -143,7 +144,7 @@ def api_monitoring_status():
 def api_detect_anomalies():
     """API pour détecter les anomalies avec les modèles Elliptic Envelope"""
     try:
-        hours = request.args.get('hours', default=24, type=int)
+        hours = request.args.get('hours', default=48, type=int)
         
         results = detect_anomalies(hours=hours)
         
@@ -168,6 +169,8 @@ def api_historical_anomalies():
             end_date=end_date,
             machines=machines
         )
+
+        print(results)
         
         return jsonify(results)
     except Exception as e:
@@ -288,10 +291,14 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error loading prediction models: {e}")
     
-    # monitoring_thread = threading.Thread(
-    #     target=surveiller_machines_automatique, 
-    #     daemon=True
-    # )
-    # monitoring_thread.start()
+    # Lancer le thread en arrière-plan
+    monitoring_thread_anomalies = threading.Thread(target=call_detect_anomalies_periodically, daemon=True)
+    monitoring_thread_anomalies.start()    
+   
+    monitoring_thread = threading.Thread(
+        target=surveiller_machines_automatique, 
+        daemon=True
+    )
+    monitoring_thread.start()
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, use_reloader=False,host='0.0.0.0', port=5000)
